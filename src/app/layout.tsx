@@ -1,23 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ClientBody from "./ClientBody";
+import ClientLayout from "./client-layout";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NiNJA: The REVIVED XBLS - Best Online JTAG/RGH Experience",
-  description: "NiNJA provides the best online JTAG/RGH experience with off-host cheats, ban bypasses, and premium Xbox 360 stealth services. Get online safely with our advanced protection systems.",
-  keywords: "Xbox 360, JTAG, RGH, stealth server, XBL, cheats, ban bypass, NiNJA, gaming",
-  authors: [{ name: "NiNJA Team" }],
-  openGraph: {
-    title: "NiNJA: The REVIVED XBLS",
-    description: "Best online JTAG/RGH experience with off-host cheats and ban bypasses",
-    type: "website",
-  },
+  title: "NiNJA - The REVIVED XBLS",
+  description: "Experience the future of Xbox 360 gaming with our advanced stealth technology",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" }
+  ]
 };
 
 export default function RootLayout({
@@ -26,8 +23,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <ClientBody>{children}</ClientBody>
+    <html lang="en" className="dark">
+      <body className={inter.className}>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+      </body>
     </html>
   );
 }
+
