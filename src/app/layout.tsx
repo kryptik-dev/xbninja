@@ -24,6 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="/ninja.small.png" type="image/png" />
+      </head>
       <body className={inter.className}>
         <ClientLayout>
           {children}

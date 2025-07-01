@@ -7,6 +7,8 @@ type ScrollContextType = {
   downloadsRef: React.RefObject<HTMLElement>;
   tutorialsRef: React.RefObject<HTMLElement>;
   tokensRef: React.RefObject<HTMLElement>;
+  pricingRef: React.RefObject<HTMLElement>;
+  heroRef: React.RefObject<HTMLElement>;
   scrollToSection: (ref: React.RefObject<HTMLElement>) => void;
 };
 
@@ -16,6 +18,8 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
   const downloadsRef = useRef<HTMLElement>(null);
   const tutorialsRef = useRef<HTMLElement>(null);
   const tokensRef = useRef<HTMLElement>(null);
+  const pricingRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
 
   const scrollToSection = (ref: React.RefObject<HTMLElement>) => {
     if (ref.current) {
@@ -33,7 +37,7 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ScrollContext.Provider value={{ downloadsRef, tutorialsRef, tokensRef, scrollToSection }}>
+    <ScrollContext.Provider value={{ downloadsRef, tutorialsRef, tokensRef, pricingRef, heroRef, scrollToSection }}>
       {children}
     </ScrollContext.Provider>
   );

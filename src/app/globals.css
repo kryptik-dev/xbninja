@@ -45,6 +45,7 @@
 
 * {
   border-color: hsl(var(--border));
+  cursor: url('/cursor.png') 16 16, auto !important;
 }
 
 body {
@@ -189,17 +190,41 @@ body {
   border-bottom: 1px solid hsl(var(--border) / 0.1);
 }
 
+.modern-nav-link,
+nav a[href*="discord"],
+nav a[href*="dsc.gg"],
+nav > a:first-child {
+  cursor: pointer !important;
+}
+
 .modern-nav-link {
-  @apply relative px-4 py-2 text-sm font-medium transition-colors;
+  position: relative;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: inherit;
+  transition: color 0.2s;
+  background: none;
+  border: none;
 }
 
 .modern-nav-link::after {
   content: '';
-  @apply absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] transition-all duration-300;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, hsl(var(--neon-blue)), hsl(var(--neon-purple)));
+  border-radius: 2px;
+  transition: width 0.3s;
 }
 
-.modern-nav-link:hover::after {
-  @apply w-full;
+.modern-nav-link.active::after {
+  width: 100%;
 }
 
 /* 2025 Grid Layout */
@@ -283,4 +308,16 @@ body {
 
 .hover-glow:hover {
   box-shadow: 0 0 20px hsl(var(--neon-blue) / 0.5);
+}
+
+button, [role="button"], a, input[type="button"], input[type="submit"] {
+  cursor: url('/cursor_pointer.png') 16 16, pointer;
+}
+
+nav > a.flex.items-center {
+  cursor: pointer !important;
+}
+
+footer a, .footer a, .bg-glass-effect a {
+  cursor: pointer !important;
 }
