@@ -133,20 +133,21 @@ export default function Home() {
         <motion.section 
           ref={heroRef}
           style={{ opacity, scale }}
-          className="relative py-20 px-4 min-h-screen flex items-center justify-center"
+          className="relative py-16 px-2 min-h-screen flex items-center justify-center"
         >
-        <div className="container mx-auto text-center">
+        <div className="container mx-auto flex flex-col items-start sm:items-center">
             <motion.div
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
+              className="w-full"
             >
             <Image
               src="/ninja-revived-header-new.png"
               alt="NiNJA: The REVIVED XBLS"
               width={730}
               height={275}
-              className="mx-auto mb-8 max-w-full h-auto"
+              className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-auto mb-6 sm:mb-8 ml-0 sm:mx-auto"
               priority
             />
             </motion.div>
@@ -156,11 +157,12 @@ export default function Home() {
               animate="visible"
               variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.2 }}
+              className="w-full text-left sm:text-center"
             >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-left sm:text-center">
               NiNJA: The REVIVED XBLS
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-full sm:max-w-4xl mx-0 sm:mx-auto leading-relaxed text-left sm:text-center">
               NiNJA will always supply the <strong>BEST</strong> online JTAG/RGH experience!<br />
               Off-host cheats (with ban bypasses) that can beat ANY other cheater!
             </p>
@@ -171,10 +173,10 @@ export default function Home() {
               animate="visible"
               variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:justify-center sm:items-center mb-8 sm:mb-12"
             >
               <button
-                className="neon-button text-lg font-bold px-8 py-3"
+                className="neon-button text-base sm:text-lg font-bold px-6 sm:px-8 py-3 w-full sm:w-auto"
                 onClick={() => scrollToSection(pricingRef)}
               >
                 Check Out Our New Prices
@@ -183,7 +185,7 @@ export default function Home() {
                 href="https://shop.xbninja.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg font-bold px-8 py-3 rounded-full border border-black bg-white text-black transition-colors duration-200 hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:mt-0 mt-2"
+                className="text-base sm:text-lg font-bold px-6 sm:px-8 py-3 w-full sm:w-auto rounded-full border border-black bg-white text-black transition-colors duration-200 hover:bg-black hover:text-white focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:mt-0 mt-2 text-center"
               >
                 Visit the Shop
               </a>
@@ -204,10 +206,10 @@ export default function Home() {
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
-              className="text-center mb-16"
+              className="text-left sm:text-center mb-16"
             >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose NiNJA?</h2>
-            <p className="text-muted-foreground text-lg">Discover the features that make NiNJA the best choice for your JTAG/RGH needs</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">Why Choose NiNJA?</h2>
+            <p className="text-muted-foreground text-lg text-left sm:text-center">Discover the features that make NiNJA the best choice for your JTAG/RGH needs</p>
             </motion.div>
 
             <motion.div
@@ -255,10 +257,10 @@ export default function Home() {
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
-              className="text-center mb-16"
+              className="text-left sm:text-center mb-16"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">NiNJA INCLUDES</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Everything you need for the ultimate Xbox 360 stealth experience, all in one place.</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">NiNJA INCLUDES</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl text-left sm:text-center">Everything you need for the ultimate Xbox 360 stealth experience, all in one place.</p>
             </motion.div>
             <motion.div
               initial="hidden"
@@ -273,11 +275,11 @@ export default function Home() {
                     key={index}
                     variants={fadeInUp}
                     whileHover={{ scale: 1.05 }}
-                    className="glass-card p-6 group flex flex-col items-center"
+                    className="glass-card p-6 group flex flex-col items-start sm:items-center"
                   >
                     <div className="mb-4 text-4xl">{item.icon}</div>
-                    <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                    <h3 className="font-bold text-lg mb-2 text-left sm:text-center">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed text-left sm:text-center">{item.description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -299,10 +301,10 @@ export default function Home() {
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
-              className="text-center mb-16"
+              className="text-left sm:text-center mb-16"
             >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">DOWNLOADS</h2>
-            <p className="text-muted-foreground text-lg">Links to get NiNJA XEX + launch.ini + JRPC.ini files to use, as well as xeBuild and dashlaunch!</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">DOWNLOADS</h2>
+            <p className="text-muted-foreground text-lg text-left sm:text-center">Links to get NiNJA XEX + launch.ini + JRPC.ini files to use, as well as xeBuild and dashlaunch!</p>
             <div className="mt-8">
               <h3 className="text-2xl font-bold text-primary mb-4">NEW DOWNLOADS FOR 17559!</h3>
             </div>
@@ -434,10 +436,10 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={fadeInUp}
-            className="text-center mb-16"
+            className="text-left sm:text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Pricing</h2>
-            <p className="text-muted-foreground text-lg">Choose the plan that fits your needs. All options below are available for NiNJA access.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">Pricing</h2>
+            <p className="text-muted-foreground text-lg text-left sm:text-center">Choose the plan that fits your needs. All options below are available for NiNJA access.</p>
           </motion.div>
           <motion.div
             variants={staggerContainer}
@@ -447,47 +449,47 @@ export default function Home() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto"
           >
             {/* Pricing Cards */}
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><Clock className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">1 Day</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$1</div>
-              <p className="text-muted-foreground text-sm text-center">Perfect for quick testing or short sessions.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">1 Day</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$1</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">Perfect for quick testing or short sessions.</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><Calendar className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">3 Days</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$2</div>
-              <p className="text-muted-foreground text-sm text-center">A weekend of fun or extended testing.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">3 Days</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$2</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">A weekend of fun or extended testing.</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><CalendarCheck className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">1 Week</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$4</div>
-              <p className="text-muted-foreground text-sm text-center">Great value for regular players.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">1 Week</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$4</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">Great value for regular players.</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><Repeat className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">2 Weeks</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$6</div>
-              <p className="text-muted-foreground text-sm text-center">Double the time, double the fun.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">2 Weeks</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$6</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">Double the time, double the fun.</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><Award className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">4 Weeks</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$9</div>
-              <p className="text-muted-foreground text-sm text-center">Best for dedicated users and savings.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">4 Weeks</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$9</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">Best for dedicated users and savings.</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center">
               <div className="mb-4 text-4xl"><Gift className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">Random Token</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$25</div>
-              <p className="text-muted-foreground text-sm text-center">Get a surprise token for any duration!</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">Random Token</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$25</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">Get a surprise token for any duration!</p>
             </motion.div>
-            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-center col-span-1 md:col-span-2 lg:col-span-3">
+            <motion.div variants={scaleIn} whileHover={{ scale: 1.05 }} className="glass-card p-6 group flex flex-col items-start sm:items-center col-span-1 md:col-span-2 lg:col-span-3">
               <div className="mb-4 text-4xl"><Infinity className="w-10 h-10 text-primary" /></div>
-              <h3 className="font-bold text-lg mb-2">Lifetime</h3>
-              <div className="text-primary font-bold text-2xl mb-2">$30</div>
-              <p className="text-muted-foreground text-sm text-center">One payment, access forever.</p>
+              <h3 className="font-bold text-lg mb-2 text-left sm:text-center">Lifetime</h3>
+              <div className="text-primary font-bold text-2xl mb-2 text-left sm:text-center">$30</div>
+              <p className="text-muted-foreground text-sm text-left sm:text-center">One payment, access forever.</p>
             </motion.div>
           </motion.div>
         </div>
@@ -507,10 +509,10 @@ export default function Home() {
               initial="hidden"
               animate="visible"
               variants={fadeInUp}
-              className="text-center mb-16"
+              className="text-left sm:text-center mb-16"
             >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">BUY NiNJA NOW!</h2>
-            <p className="text-muted-foreground text-lg mb-8">Click below to open a Discord chat with one of our sellers!<br />Ask about our auto-buy site!</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">BUY NiNJA NOW!</h2>
+            <p className="text-muted-foreground text-lg text-left sm:text-center mb-8">Click below to open a Discord chat with one of our sellers!<br />Ask about our auto-buy site!</p>
             </motion.div>
 
           <div className="max-w-4xl mx-auto">
