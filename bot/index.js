@@ -297,14 +297,26 @@ async function uploadToGitHub(filePath, filename) {
     // Ensure directory exists
     await fs.ensureDir(path.dirname(correctFullPath));
     
-    // Move file to correct location
-    await fs.move(filePath, correctFullPath, { overwrite: true });
-    console.log(`✅ Moved file to: ${correctPath}`);
-    
-    // Update filePath and relativePath for git operations
-    filePath = correctFullPath;
-    finalRelativePath = path.relative(process.cwd(), filePath);
-    console.log(`📁 Final relative path: ${finalRelativePath}`);
+         // Move file to correct location
+     await fs.move(filePath, correctFullPath, { overwrite: true });
+     console.log(`✅ Moved file to: ${correctPath}`);
+     
+     // Update filePath and relativePath for git operations
+     filePath = correctFullPath;
+     finalRelativePath = path.relative(process.cwd(), filePath);
+     console.log(`📁 Final relative path: ${finalRelativePath}`);
+     
+     // Check if file content has actually changed
+     try {
+       const { stdout: diffOutput } = await execAsync(`git diff --quiet "${finalRelativePath}"`);
+       console.log(`📋 File content check: no changes detected`);
+       // If git diff --quiet succeeds, it means no changes
+       console.log(`ℹ️ File content unchanged - no commit needed`);
+       return true;
+     } catch (diffError) {
+       // If git diff --quiet fails, it means there are changes
+       console.log(`📋 File content check: changes detected, proceeding with commit`);
+     }
     
     // Clean up any git lock files that might be blocking us
     try {
@@ -329,19 +341,40 @@ async function uploadToGitHub(filePath, filename) {
       console.log(`📋 Git status check failed, continuing...`);
     }
     
-    // Use the final path for git operations
-    console.log(`🎯 Using final file path: ${finalRelativePath}`);
-    await execAsync(`git add "${finalRelativePath}"`);
-    console.log(`✅ Added ${finalRelativePath} to git`);
-    
-    // Check what's staged
-    const { stdout: stagedFiles } = await execAsync('git status --porcelain');
-    console.log(`📋 Staged files: ${stagedFiles}`);
-    
-    // Commit the changes
-    const commitMessage = `🤖 Auto-update: ${filename} - Updated by NiNJA File Bot`;
-    await execAsync(`git commit -m "${commitMessage}"`);
-    console.log(`✅ Committed ${filename} to GitHub`);
+                          // Use the final path for git operations
+           console.log(`🎯 Using final file path: ${finalRelativePath}`);
+           await execAsync(`git add -f "${finalRelativePath}"`);
+           console.log(`✅ Added ${finalRelativePath} to git (forced)`);
+     
+           // Force stage all changes and verify
+      console.log(`🔄 Force staging all changes...`);
+      await execAsync(`git add -A`);
+      
+      const { stdout: stagedFiles } = await execAsync('git status --porcelain');
+      console.log(`📋 Staged files: ${stagedFiles}`);
+      
+      // Double-check our specific file is staged
+      if (!stagedFiles.includes(filename) && !stagedFiles.includes(finalRelativePath.replace(/\\/g, '/'))) {
+        console.log(`⚠️ File still not staged, using aggressive staging...`);
+        await execAsync(`git add -f "${finalRelativePath}"`);
+        const { stdout: finalStaged } = await execAsync('git status --porcelain');
+        console.log(`📋 Final staged files: ${finalStaged}`);
+      }
+     
+           // Force commit even if git thinks nothing changed
+      const commitMessage = `🤖 Auto-update: ${filename} - Updated by NiNJA File Bot`;
+      
+      if (stagedFiles.trim()) {
+        // Normal commit with staged changes
+        await execAsync(`git commit -m "${commitMessage}"`);
+        console.log(`✅ Committed ${filename} to GitHub`);
+      } else {
+        // Force commit even if no staged changes (file might be identical but we want to ensure it's there)
+        console.log(`🔄 No staged changes detected, forcing commit...`);
+        await execAsync(`git add -f "${finalRelativePath}"`);
+        await execAsync(`git commit --allow-empty -m "${commitMessage}"`);
+        console.log(`✅ Force committed ${filename} to GitHub`);
+      }
     
     // Push to GitHub
     await execAsync('git push origin main');

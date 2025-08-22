@@ -13,8 +13,12 @@ yarn-error.log*
 
 # Next.js build output
 .next/
-out/
 dist/
+
+# Build output - but keep NiNJA files
+out/
+!out/Files/
+!out/Files/Ninja Files/
 
 # Runtime data
 pids

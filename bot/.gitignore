@@ -65,7 +65,7 @@ jspm_packages/
 
 # Next.js build output
 .next
-out
+
 
 # Nuxt.js build / generate output
 .nuxt
@@ -80,8 +80,7 @@ public
 .storybook-out
 
 # Temporary folders
-tmp/
-temp/
+
 
 # Editor directories and files
 .vscode/
