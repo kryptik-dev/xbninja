@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Server, Shield, Zap, Target, Users, Play, Palette, Globe, Clock, Calendar, CalendarCheck, Repeat, Award, Gift, Infinity, Gamepad2, ShieldCheck, UserX, Globe2, Key, Rocket, TimerReset, Bug, Laptop2, Trophy, BadgeDollarSign } from "lucide-react";
 import { motion, useScroll, useTransform, animate, useMotionValue } from "framer-motion";
 import ParticlesBackground from "@/components/particles-background";
+import DiscordUserCard from "@/components/discord-user-card";
+import TeamSection from "@/components/team-section";
 import { useRef } from "react";
 import { useScroll as useScrollContext } from "@/context/ScrollContext";
 
@@ -260,7 +262,7 @@ export default function Home() {
               className="text-left sm:text-center mb-16"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-left sm:text-center">NiNJA INCLUDES</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl text-left sm:text-center">Everything you need for the ultimate Xbox 360 stealth experience, all in one place.</p>
+              <p className="text-muted-foreground text-lg max-w-2xl text-left sm:text-center sm:mx-auto">Everything you need for the ultimate Xbox 360 stealth experience, all in one place.</p>
             </motion.div>
             <motion.div
               initial="hidden"
@@ -515,45 +517,17 @@ export default function Home() {
             <p className="text-muted-foreground text-lg text-left sm:text-center mb-8">Click below to open a Discord chat with one of our sellers!<br />Ask about our auto-buy site!</p>
             </motion.div>
 
-          <div className="max-w-4xl mx-auto">
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center mb-8"
-              >
-                <h3 className="text-2xl font-bold mb-6">Official NiNJA Sellers</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {sellers.map((seller, index) => (
-                    <Link
-                      key={index}
-                      href={`https://discord.com/users/${seller.id}`}
-                      className="glass-card p-6 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-transform"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                        <Image
-                          src={seller.icon}
-                          alt={seller.name}
-                          width={48}
-                          height={48}
-                          className="rounded-full"
-                        />
-                      </div>
-                      <span className="font-greater-theory text-xl">{seller.name}</span>
-                      <div className="flex items-center gap-2 text-primary">
-                        <span className="text-sm">Official Seller</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="#1877F2" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" fill="#1877F2" />
-                          <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
-                    </Link>
-                  ))}
-                </div>
-              </motion.div>
+          <div className="w-full">
+              <TeamSection
+                title="Official NiNJA Sellers"
+                subtitle="Connect with our trusted team members for all your NiNJA needs"
+                members={sellers.map(seller => ({
+                  id: seller.id,
+                  name: seller.name,
+                  role: "Official Seller",
+                  description: `Contact ${seller.name} for NiNJA tokens and support`
+                }))}
+              />
 
               <motion.div
                 initial="hidden"
@@ -721,10 +695,10 @@ const features = [
 
 const downloads = [
   {
-    title: "NiNJA PLUGIN FILES",
-    description: "Complete plugin package for 17559 (xbNiNJA.zip)",
-    url: "/Files/Ninja%20Files/xbNiNJA.zip",
-    size: "7.97MB"
+    title: "NiNJA XEX FILE",
+    description: "Official NiNJA.xex for 17559 (NiNJA.xex)",
+    url: "/Files/Ninja%20Files/NiNJA.xex?download=nocache",
+    size: "244KB"
   },
   {
     title: "OFFICIAL 17559 xeBuild 1.21 GUI",
