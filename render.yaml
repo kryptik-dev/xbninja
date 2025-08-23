@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ninja-file-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DISCORD_BOT_TOKEN
+        sync: false
+      - key: MONITOR_CHANNEL_ID
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: ALLOWED_USER_IDS
+        sync: false
+      - key: NODE_ENV
+        value: production
