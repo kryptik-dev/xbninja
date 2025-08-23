@@ -294,6 +294,10 @@ async function uploadToGitHub(filePath, filename) {
     if (response.status === 200 || response.status === 201) {
       console.log(`✅ Successfully uploaded ${filename} to GitHub!`);
       console.log(`🔗 File URL: ${response.data.content.html_url}`);
+      
+      // Create a new release with this file
+      await createGitHubRelease(filePath, filename);
+      
       return true;
     } else {
       console.error(`❌ Unexpected response status: ${response.status}`);
@@ -307,12 +311,263 @@ async function uploadToGitHub(filePath, filename) {
       
       if (error.response.status === 422) {
         console.log(`ℹ️ File content unchanged - GitHub considers this an update`);
+        // Still create a release even if file content is the same
+        await createGitHubRelease(filePath, filename);
         return true; // Treat as success since file is already up to date
       }
     } else {
       console.error(`❌ Network/Request Error:`, error.message);
     }
     return false;
+  }
+}
+
+// Create or update GitHub release with the file
+async function createGitHubRelease(filePath, filename) {
+  try {
+    console.log(`🏷️ Managing GitHub release for ${filename}...`);
+    
+    // Check if a release already exists
+    const existingRelease = await getExistingRelease();
+    
+    if (existingRelease) {
+      // Update existing release
+      await updateExistingRelease(existingRelease, filePath, filename);
+    } else {
+      // Create new release
+      await createNewRelease(filePath, filename);
+    }
+    
+  } catch (error) {
+    if (error.response) {
+      console.error(`❌ GitHub Release API Error: ${error.response.status} - ${error.response.statusText}`);
+      console.error(`📋 Error details:`, error.response.data);
+    } else {
+      console.error(`❌ Network/Request Error:`, error.message);
+    }
+  }
+}
+
+// Get existing release if it exists
+async function getExistingRelease() {
+  try {
+    console.log(`🔍 Checking for existing releases...`);
+    const response = await axios({
+      method: 'GET',
+      url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases/latest`,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot'
+      }
+    });
+    
+    if (response.status === 200) {
+      console.log(`✅ Found existing release: ${response.data.tag_name}`);
+      // If it's not 'latest', we'll need to delete it and create a new one
+      if (response.data.tag_name !== 'latest') {
+        console.log(`🔄 Found old release tag: ${response.data.tag_name}, will delete and recreate with 'latest'`);
+        await deleteOldRelease(response.data.id);
+        return null; // Return null to create new 'latest' release
+      }
+      return response.data;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      console.log(`ℹ️ No existing releases found, will create new one`);
+    } else {
+      console.error(`❌ Error checking existing releases:`, error.message);
+    }
+  }
+  return null;
+}
+
+// Delete old release to replace with 'latest'
+async function deleteOldRelease(releaseId) {
+  try {
+    console.log(`🗑️ Deleting old release to replace with 'latest' tag...`);
+    
+    // Delete the release (this also deletes the tag)
+    await axios({
+      method: 'DELETE',
+      url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases/${releaseId}`,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot'
+      }
+    });
+    
+    console.log(`✅ Old release deleted successfully`);
+    
+  } catch (error) {
+    console.error(`❌ Error deleting old release:`, error.message);
+  }
+}
+
+// Create new release
+async function createNewRelease(filePath, filename) {
+  try {
+    console.log(`🏷️ Creating new GitHub release for ${filename}...`);
+    
+    const now = new Date();
+    const tagName = 'latest'; // Permanent tag that never changes
+    
+    const releasePayload = {
+      tag_name: tagName,
+      name: `NiNJA Latest Release`,
+      body: `🤖 **Auto-generated release by Avy**\n\n📁 **File:** ${filename}\n📅 **Last Updated:** ${now.toISOString()}\n\nThis release contains the latest NiNJA.xex file automatically uploaded from Discord.\n\n**Direct Download Link:**\nhttps://github.com/${config.github.owner}/${config.github.repo}/releases/download/${tagName}/${filename}`,
+      draft: false,
+      prerelease: false
+    };
+    
+    console.log(`📡 Creating release with permanent tag: ${tagName}`);
+    const releaseResponse = await axios({
+      method: 'POST',
+      url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases`,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot'
+      },
+      data: releasePayload
+    });
+    
+    if (releaseResponse.status === 201) {
+      console.log(`✅ Release created successfully with permanent tag: ${tagName}`);
+      console.log(`🔗 Release URL: ${releaseResponse.data.html_url}`);
+      console.log(`📥 Direct Download: https://github.com/${config.github.owner}/${config.github.repo}/releases/download/${tagName}/${filename}`);
+      
+      // Upload the file as a release asset
+      await uploadReleaseAsset(releaseResponse.data.upload_url, filePath, filename);
+    } else {
+      console.error(`❌ Failed to create release: ${releaseResponse.status}`);
+    }
+    
+  } catch (error) {
+    console.error(`❌ Error creating new release:`, error.message);
+  }
+}
+
+// Update existing release
+async function updateExistingRelease(release, filePath, filename) {
+  try {
+    console.log(`🔄 Updating existing release: ${release.tag_name}`);
+    
+    const now = new Date();
+    const updatedBody = `🤖 **Auto-updated release by Avy**\n\n📁 **Latest File:** ${filename}\n📅 **Last Updated:** ${now.toISOString()}\n\nThis release contains the latest NiNJA.xex file automatically uploaded from Discord.\n\n**Direct Download Link:**\nhttps://github.com/${config.github.owner}/${config.github.repo}/releases/download/${release.tag_name}/${filename}`;
+    
+    // Update the release
+    const updateResponse = await axios({
+      method: 'PATCH',
+      url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases/${release.id}`,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot'
+      },
+      data: {
+        name: `NiNJA Latest Release`,
+        body: updatedBody
+      }
+    });
+    
+    if (updateResponse.status === 200) {
+      console.log(`✅ Release updated successfully: ${release.tag_name}`);
+      console.log(`📥 Direct Download: https://github.com/${config.github.owner}/${config.github.repo}/releases/download/${release.tag_name}/${filename}`);
+      
+      // Remove old asset if it exists
+      await removeOldAssets(release.id, filename);
+      
+      // Upload new file as release asset
+      await uploadReleaseAsset(release.upload_url, filePath, filename);
+      
+    } else {
+      console.error(`❌ Failed to update release: ${updateResponse.status}`);
+    }
+    
+  } catch (error) {
+    console.error(`❌ Error updating release:`, error.message);
+  }
+}
+
+// Remove old assets with the same filename
+async function removeOldAssets(releaseId, filename) {
+  try {
+    console.log(`🗑️ Checking for old assets to remove...`);
+    
+    // Get release assets
+    const assetsResponse = await axios({
+      method: 'GET',
+      url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases/${releaseId}/assets`,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot'
+      }
+    });
+    
+    if (assetsResponse.status === 200) {
+      for (const asset of assetsResponse.data) {
+        if (asset.name === filename) {
+          console.log(`🗑️ Removing old asset: ${asset.name}`);
+          await axios({
+            method: 'DELETE',
+            url: `https://api.github.com/repos/${config.github.owner}/${config.github.repo}/releases/assets/${asset.id}`,
+            headers: {
+              'Authorization': `token ${config.github.token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent': 'NiNJA-File-Bot'
+            }
+          });
+          console.log(`✅ Old asset removed: ${asset.name}`);
+        }
+      }
+    }
+    
+  } catch (error) {
+    console.error(`❌ Error removing old assets:`, error.message);
+  }
+}
+
+// Upload file as release asset
+async function uploadReleaseAsset(uploadUrl, filePath, filename) {
+  try {
+    console.log(`📤 Uploading ${filename} as release asset...`);
+    
+    // Read file content
+    const fileContent = await fs.readFile(filePath);
+    
+    // Extract the upload URL without query parameters
+    const cleanUploadUrl = uploadUrl.split('{')[0];
+    const assetUrl = `${cleanUploadUrl}?name=${encodeURIComponent(filename)}&label=${encodeURIComponent(filename)}`;
+    
+    // Upload the asset
+    const assetResponse = await axios({
+      method: 'POST',
+      url: assetUrl,
+      headers: {
+        'Authorization': `token ${config.github.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'NiNJA-File-Bot',
+        'Content-Type': 'application/octet-stream'
+      },
+      data: fileContent
+    });
+    
+    if (assetResponse.status === 201) {
+      console.log(`✅ Release asset uploaded successfully: ${filename}`);
+      console.log(`🔗 Asset URL: ${assetResponse.data.browser_download_url}`);
+    } else {
+      console.error(`❌ Failed to upload asset: ${assetResponse.status}`);
+    }
+    
+  } catch (error) {
+    if (error.response) {
+      console.error(`❌ GitHub Asset Upload Error: ${error.response.status} - ${error.response.statusText}`);
+    } else {
+      console.error(`❌ Network/Request Error:`, error.message);
+    }
   }
 }
 
