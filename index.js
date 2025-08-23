@@ -25,8 +25,8 @@ const config = {
     token: process.env.GITHUB_TOKEN,
     owner: 'kryptik-dev',
     repo: 'xbninja',
-    branch: 'main',
-    path: 'out/Files/Ninja Files'
+    branch: 'master',
+    path: 'Files/Ninja Files'
   },
   
   // Express server configuration
@@ -289,10 +289,10 @@ async function uploadToGitHub(filePath, filename) {
     const relativePath = path.relative(process.cwd(), filePath);
     console.log(`📁 Relative path: ${relativePath}`);
     
-    // Always move file from temp to correct GitHub location
-    console.log(`📁 Moving file from temp to GitHub location...`);
-    const correctPath = path.join('out', 'Files', 'Ninja Files', filename);
-    const correctFullPath = path.join(process.cwd(), correctPath);
+         // Always move file from temp to correct GitHub location
+     console.log(`📁 Moving file from temp to GitHub location...`);
+     const correctPath = path.join('Files', 'Ninja Files', filename);
+     const correctFullPath = path.join(process.cwd(), correctPath);
     
     // Ensure directory exists
     await fs.ensureDir(path.dirname(correctFullPath));
@@ -376,38 +376,40 @@ async function uploadToGitHub(filePath, filename) {
         console.log(`✅ Force committed ${filename} to GitHub`);
       }
     
-    // Push to GitHub
-    await execAsync('git push origin main');
-    console.log(`✅ Pushed ${filename} to GitHub`);
-    
-    // Restore stashed changes if any
-    try {
-      const { stdout: stashList } = await execAsync('git stash list');
-      if (stashList.includes('Bot stash before file update')) {
-        await execAsync('git stash pop');
-        console.log(`📋 Restored stashed changes`);
-      }
-    } catch (error) {
-      console.log(`📋 Could not restore stashed changes:`, error.message);
-    }
-    
-    return true;
-  } catch (error) {
-    console.error(`❌ Error uploading ${filename} to GitHub:`, error);
-    
-    // Try to restore stashed changes on error
-    try {
-      const { stdout: stashList } = await execAsync('git stash list');
-      if (stashList.includes('Bot stash before file update')) {
-        await execAsync('git stash pop');
-        console.log(`📋 Restored stashed changes after error`);
-      }
-    } catch (stashError) {
-      console.log(`📋 Could not restore stashed changes:`, stashError.message);
-    }
-    
-    return false;
-  }
+              // Push to GitHub
+     await execAsync('git push origin master');
+     console.log(`✅ Pushed ${filename} to GitHub`);
+     
+     // Delete .git folder to prevent tracking commit history
+     console.log(`🗑️ Deleting .git folder to prevent history tracking...`);
+     try {
+       const gitFolderPath = path.join(process.cwd(), '.git');
+       if (await fs.pathExists(gitFolderPath)) {
+         await fs.remove(gitFolderPath);
+         console.log(`✅ .git folder deleted successfully`);
+       }
+     } catch (error) {
+       console.log(`⚠️ Could not delete .git folder:`, error.message);
+     }
+     
+     return true;
+     } catch (error) {
+     console.error(`❌ Error uploading ${filename} to GitHub:`, error);
+     
+     // Delete .git folder even on error to prevent history tracking
+     console.log(`🗑️ Deleting .git folder after error...`);
+     try {
+       const gitFolderPath = path.join(process.cwd(), '.git');
+       if (await fs.pathExists(gitFolderPath)) {
+         await fs.remove(gitFolderPath);
+         console.log(`✅ .git folder deleted after error`);
+       }
+     } catch (deleteError) {
+       console.log(`⚠️ Could not delete .git folder after error:`, deleteError.message);
+     }
+     
+     return false;
+   }
 }
 
 // Clean up git lock files
@@ -440,48 +442,36 @@ async function cleanupGitLocks() {
   }
 }
 
-// Initialize git repository if not already done
-async function initializeGit() {
-  try {
-    const projectRoot = path.resolve(__dirname, '..');
-    process.chdir(projectRoot);
-    
-    // Clean up any existing git locks first
-    await cleanupGitLocks();
-    
-    // Check if git is initialized
-    try {
-      await execAsync('git status');
-      console.log('✅ Git repository already initialized');
-    } catch (error) {
-      // Git not initialized, set it up
-      console.log('🔧 Initializing git repository...');
-      
-      // Initialize git
-      await execAsync('git init');
-      
-      // Add remote origin
-      await execAsync(`git remote add origin https://github.com/${config.github.owner}/${config.github.repo}.git`);
-      
-      // Set up git config
-      await execAsync('git config user.name "NiNJA File Bot"');
-      await execAsync('git config user.email "bot@xbninja.com"');
-      
-      // Create initial commit if no commits exist
-      try {
-        await execAsync('git log --oneline -1');
-      } catch (error) {
-        // No commits exist, create initial commit
-        await execAsync('git add .');
-        await execAsync('git commit -m "🚀 Initial commit - NiNJA Files"');
-      }
-      
-      console.log('✅ Git repository initialized successfully');
-    }
-  } catch (error) {
-    console.error('❌ Error initializing git:', error);
-  }
-}
+ // Initialize git repository (always fresh since we delete .git after each upload)
+ async function initializeGit() {
+   try {
+     const projectRoot = path.resolve(__dirname, '..');
+     process.chdir(projectRoot);
+     
+     // Clean up any existing git locks first
+     await cleanupGitLocks();
+     
+     // Always initialize fresh git repository
+     console.log('🔧 Initializing fresh git repository...');
+     
+     // Initialize git
+     await execAsync('git init');
+     
+     // Add remote origin
+     await execAsync(`git remote add origin https://github.com/${config.github.owner}/${config.github.repo}.git`);
+     
+     // Set up git config
+     await execAsync('git config user.name "NiNJA File Bot"');
+     await execAsync('git config user.email "bot@xbninja.com"');
+     
+     // Set branch to master
+     await execAsync('git branch -M master');
+     
+     console.log('✅ Fresh git repository initialized successfully');
+   } catch (error) {
+     console.error('❌ Error initializing git:', error);
+   }
+ }
 
 // Process file attachment
 async function processFileAttachment(attachment, message) {
